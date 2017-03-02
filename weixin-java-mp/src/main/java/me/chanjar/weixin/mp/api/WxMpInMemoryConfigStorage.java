@@ -67,6 +67,7 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
 
   @Override
   public Lock getAccessTokenLock() {
+    if (this.accessTokenLock == null) return new ReentrantLock();
     return this.accessTokenLock;
   }
 
@@ -102,6 +103,7 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
 
   @Override
   public Lock getJsapiTicketLock() {
+    if (this.jsapiTicketLock == null) return new ReentrantLock();
     return this.jsapiTicketLock;
   }
 
@@ -140,6 +142,7 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
 
   @Override
   public Lock getCardApiTicketLock() {
+    if (this.cardApiTicketLock == null) return new ReentrantLock();
     return this.cardApiTicketLock;
   }
 
