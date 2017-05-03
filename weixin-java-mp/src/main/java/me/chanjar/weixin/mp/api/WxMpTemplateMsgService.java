@@ -51,6 +51,17 @@ public interface WxMpTemplateMsgService {
 
   /**
    * <pre>
+   *   发送模板消息
+   *   详情请见: http://mp.weixin.qq.com/wiki/index.php?title=模板消息接口
+   * </pre>
+   * @param jsonContent
+   * @return
+   * @throws WxErrorException
+   */
+  String templateSend(String jsonContent) throws WxErrorException;
+
+  /**
+   * <pre>
    * 获得模板ID
    * 从行业模板库选择模板到帐号后台，获得模板ID的过程可在MP中完成
    * 详情请见: http://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1433751277&token=&lang=zh_CN

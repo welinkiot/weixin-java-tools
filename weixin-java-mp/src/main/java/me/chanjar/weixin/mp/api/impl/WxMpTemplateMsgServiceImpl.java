@@ -40,6 +40,17 @@ public class WxMpTemplateMsgServiceImpl implements WxMpTemplateMsgService {
   }
 
   @Override
+  public String templateSend(String jsonContent) throws WxErrorException {
+    String url = "https://api.weixin.qq.com/cgi-bin/message/template/send";
+    String responseContent = this.wxMpService.post(url, jsonContent);
+    final JsonObject jsonObject = JSON_PARSER.parse(responseContent).getAsJsonObject();
+    if (jsonObject.get("errcode").getAsInt() == 0) {
+      return jsonObject.get("msgid").getAsString();
+    }
+    throw new WxErrorException(WxError.fromJson(responseContent));
+  }
+
+  @Override
   public boolean setIndustry(WxMpTemplateIndustry wxMpIndustry) throws WxErrorException {
     if (null == wxMpIndustry.getPrimaryIndustry() || null == wxMpIndustry.getPrimaryIndustry().getId()
       || null == wxMpIndustry.getSecondIndustry() || null == wxMpIndustry.getSecondIndustry().getId()) {
