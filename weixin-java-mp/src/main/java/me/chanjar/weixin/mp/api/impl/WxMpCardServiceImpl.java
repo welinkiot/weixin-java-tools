@@ -6,8 +6,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import me.chanjar.weixin.common.bean.WxCardApiSignature;
-import me.chanjar.weixin.common.bean.result.WxError;
-import me.chanjar.weixin.common.exception.WxErrorException;
+import me.chanjar.weixin.common.error.WxError;
+import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.util.RandomUtils;
 import me.chanjar.weixin.common.util.crypto.SHA1;
 import me.chanjar.weixin.common.util.http.SimpleGetRequestExecutor;
@@ -213,7 +213,7 @@ public class WxMpCardServiceImpl implements WxMpCardService {
     WxMpCardResult cardResult = WxMpGsonBuilder.INSTANCE.create().fromJson(tmpJsonElement,
       new TypeToken<WxMpCardResult>() {
       }.getType());
-    if (!cardResult.getErrorCode().equals("0")) {
+    if (!"0".equals(cardResult.getErrorCode())) {
       this.log.warn("朋友的券mark失败：{}", cardResult.getErrorMsg());
     }
   }

@@ -18,6 +18,7 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
   protected volatile String appId;
   protected volatile String secret;
   protected volatile String token;
+  protected volatile String templateId;
   protected volatile String accessToken;
   protected volatile String aesKey;
   protected volatile long expiresTime;
@@ -174,6 +175,15 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  @Override
+  public String getTemplateId() {
+    return this.templateId;
+  }
+
+  public void setTemplateId(String templateId) {
+    this.templateId = templateId;
   }
 
   @Override

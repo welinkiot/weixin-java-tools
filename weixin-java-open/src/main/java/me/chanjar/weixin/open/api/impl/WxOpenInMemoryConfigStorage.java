@@ -1,6 +1,7 @@
 package me.chanjar.weixin.open.api.impl;
 
 
+import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.util.ToStringUtils;
 import me.chanjar.weixin.common.util.http.apache.ApacheHttpClientBuilder;
@@ -28,6 +29,11 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
   private String componentVerifyTicket;
   private String componentAccessToken;
   private long componentExpiresTime;
+
+  private String httpProxyHost;
+  private int httpProxyPort;
+  private String httpProxyUsername;
+  private String httpProxyPassword;
 
   private Map<String, Token> authorizerRefreshTokens = new Hashtable<>();
   private Map<String, Token> authorizerAccessTokens = new Hashtable<>();
@@ -95,13 +101,59 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
   }
 
   @Override
+  public void expireComponentAccessToken() {
+    this.componentExpiresTime = 0L;
+  }
+
+  @Override
   public void updateComponentAccessTokent(WxOpenComponentAccessToken componentAccessToken) {
     updateComponentAccessTokent(componentAccessToken.getComponentAccessToken(), componentAccessToken.getExpiresIn());
   }
 
   @Override
+  public String getHttpProxyHost() {
+    return httpProxyHost;
+  }
+
+  public void setHttpProxyHost(String httpProxyHost) {
+    this.httpProxyHost = httpProxyHost;
+  }
+
+  @Override
+  public int getHttpProxyPort() {
+    return httpProxyPort;
+  }
+
+  public void setHttpProxyPort(int httpProxyPort) {
+    this.httpProxyPort = httpProxyPort;
+  }
+
+  @Override
+  public String getHttpProxyUsername() {
+    return httpProxyUsername;
+  }
+
+  public void setHttpProxyUsername(String httpProxyUsername) {
+    this.httpProxyUsername = httpProxyUsername;
+  }
+
+  @Override
+  public String getHttpProxyPassword() {
+    return httpProxyPassword;
+  }
+
+  public void setHttpProxyPassword(String httpProxyPassword) {
+    this.httpProxyPassword = httpProxyPassword;
+  }
+
+  @Override
   public WxMpConfigStorage getWxMpConfigStorage(String appId) {
-    return new WxOpenMpConfigStorage(this, appId);
+    return new WxOpenInnerConfigStorage(this, appId);
+  }
+
+  @Override
+  public WxMaConfig getWxMaConfig(String appId) {
+    return new WxOpenInnerConfigStorage(this, appId);
   }
 
   @Override
@@ -223,13 +275,14 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
     private Long expiresTime;
   }
 
-  private static class WxOpenMpConfigStorage implements WxMpConfigStorage {
+  private static class WxOpenInnerConfigStorage implements WxMpConfigStorage, WxMaConfig {
     private WxOpenConfigStorage wxOpenConfigStorage;
     private String appId;
     private Lock accessTokenLock = new ReentrantLock();
     private Lock jsapiTicketLock = new ReentrantLock();
     private Lock cardApiTicketLock = new ReentrantLock();
-    private WxOpenMpConfigStorage(WxOpenConfigStorage wxOpenConfigStorage, String appId) {
+
+    private WxOpenInnerConfigStorage(WxOpenConfigStorage wxOpenConfigStorage, String appId) {
       this.wxOpenConfigStorage = wxOpenConfigStorage;
       this.appId = appId;
     }
@@ -257,6 +310,11 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
     @Override
     public synchronized void updateAccessToken(String accessToken, int expiresInSeconds) {
       wxOpenConfigStorage.updateAuthorizerAccessToken(appId, accessToken, expiresInSeconds);
+    }
+
+    @Override
+    public String getAppid() {
+      return this.appId;
     }
 
     @Override
@@ -333,6 +391,11 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
     }
 
     @Override
+    public String getTemplateId() {
+      return null;
+    }
+
+    @Override
     public long getExpiresTime() {
       return 0;
     }
@@ -344,28 +407,33 @@ public class WxOpenInMemoryConfigStorage implements WxOpenConfigStorage {
     }
 
     @Override
+    public String getMsgDataFormat() {
+      return null;
+    }
+
+    @Override
     public String getOauth2redirectUri() {
       return null;
     }
 
     @Override
     public String getHttpProxyHost() {
-      return null;
+      return this.wxOpenConfigStorage.getHttpProxyHost();
     }
 
     @Override
     public int getHttpProxyPort() {
-      return 0;
+      return this.wxOpenConfigStorage.getHttpProxyPort();
     }
 
     @Override
     public String getHttpProxyUsername() {
-      return null;
+      return this.wxOpenConfigStorage.getHttpProxyUsername();
     }
 
     @Override
     public String getHttpProxyPassword() {
-      return null;
+      return this.wxOpenConfigStorage.getHttpProxyPassword();
     }
 
     @Override
